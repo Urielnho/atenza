@@ -3,6 +3,7 @@ import { Text, View, useWindowDimensions } from "react-native";
 import { Shell } from "../components/Shell";
 import { Card, colors, s } from "../components/ui";
 import { useData } from "../lib/store";
+import { formatTime, formatDate } from "../lib/time";
 export default function Display() {
   const [now, setNow] = useState(new Date());
   const { notices, attendance, status, session } = useData();
@@ -15,10 +16,7 @@ export default function Display() {
     <Shell>
       <View style={[s.row, { justifyContent: "space-between" }]}>
         <View>
-          <Text style={s.label}>ESPACIO CONECTADO</Text>
-          <Text style={[s.title, { marginTop: 8 }]}>
-            Todo comienza con tu presencia.
-          </Text>
+          <Text style={[s.title, { marginTop: 8 }]}>Tablero</Text>
         </View>
         <Text style={{ color: colors.accent, fontSize: 13 }}>● {status}</Text>
       </View>
@@ -33,7 +31,7 @@ export default function Display() {
             }}
           >
             <Text style={{ color: "#A8C2D1", letterSpacing: 2, fontSize: 12 }}>
-              BIENVENIDO A ATENZA
+              HERMOSILLO, SONORA
             </Text>
             <Text
               style={{
@@ -44,11 +42,7 @@ export default function Display() {
                 fontVariant: ["tabular-nums"],
               }}
             >
-              {now.toLocaleTimeString("es-MX", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })}
+              {formatTime(now)}
               <Text
                 style={{ fontSize: 24, color: "#8CA4B8", letterSpacing: 0 }}
               >
@@ -57,11 +51,7 @@ export default function Display() {
               </Text>
             </Text>
             <Text style={{ color: "#D8E3EC", fontSize: 18 }}>
-              {now.toLocaleDateString("es-MX", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-              })}
+              {formatDate(now)}
             </Text>
             <View
               style={{
@@ -71,12 +61,11 @@ export default function Display() {
               }}
             />
             <Text style={{ color: "#B7C7D5", lineHeight: 24 }}>
-              Registra tu entrada o salida desde ATENZA Móvil.{"\n"}Confirma tu
-              identidad con huella o rostro.
+              Registra tu asistencia desde tu celular.
             </Text>
           </View>
           <Card>
-            <Text style={s.label}>01 / TABLERO DE AVISOS</Text>
+            <Text style={s.heading}>Avisos</Text>
             {notices.length ? (
               notices.slice(0, 3).map((n) => (
                 <View key={n.id} style={{ gap: 8 }}>
@@ -86,11 +75,10 @@ export default function Display() {
               ))
             ) : (
               <>
-                <Text style={s.heading}>Un espacio para estar al día.</Text>
                 <Text style={s.muted}>
                   {session
-                    ? "Los avisos publicados por administración aparecerán aquí."
-                    : "Inicia sesión para consultar los avisos de tu organización."}
+                    ? "No hay avisos."
+                    : "Inicia sesión para ver los avisos."}
                 </Text>
               </>
             )}
@@ -98,8 +86,7 @@ export default function Display() {
         </View>
         <View style={{ flex: 1 }}>
           <Card>
-            <Text style={s.label}>02 / ACTIVIDAD RECIENTE</Text>
-            <Text style={s.heading}>Cada llegada cuenta.</Text>
+            <Text style={s.heading}>Asistencias recientes</Text>
             {attendance.length ? (
               attendance.slice(0, 8).map((a) => (
                 <View
@@ -137,24 +124,18 @@ export default function Display() {
                         : "Salida registrada"}
                     </Text>
                   </View>
-                  <Text style={s.label}>
-                    {new Date(a.created_at).toLocaleTimeString("es-MX", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Text>
+                  <Text style={s.label}>{formatTime(a.created_at)}</Text>
                 </View>
               ))
             ) : (
               <View style={{ paddingVertical: 60, gap: 14 }}>
-                <Text style={{ fontSize: 44, color: colors.accent }}>↗</Text>
-                <Text style={s.heading}>Listos para comenzar</Text>
                 <Text style={s.muted}>
-                  Las asistencias aparecerán aquí cuando se registren.
+                  {session
+                    ? "No hay registros."
+                    : "Inicia sesión para ver las asistencias."}
                 </Text>
               </View>
             )}
-            <Text style={s.muted}>Información actualizada desde la nube.</Text>
           </Card>
         </View>
       </View>

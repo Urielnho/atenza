@@ -32,9 +32,6 @@ export function Shell({ children }: PropsWithChildren) {
             >
               ATENZA<Text style={{ color: colors.accent }}> ·</Text>
             </Text>
-            <Text style={[s.label, { fontSize: 9, marginTop: 6 }]}>
-              PRESENCIA QUE CONECTA
-            </Text>
           </View>
           <View style={s.row}>
             <Button
@@ -64,9 +61,6 @@ export function Shell({ children }: PropsWithChildren) {
           </View>
         </View>
         {children}
-        <Text style={[s.label, { fontSize: 10, marginTop: 12 }]}>
-          ATENZA / ASISTENCIA Y COMUNICACIÓN
-        </Text>
       </ScrollView>
     </SafeAreaView>
   );

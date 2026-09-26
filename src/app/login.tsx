@@ -13,7 +13,9 @@ export default function Login() {
   const [message, setMessage] = useState("");
   async function submit() {
     if (!supabase)
-      return setMessage("La conexión con Supabase está pendiente.");
+      return setMessage(
+        "El servicio no está disponible. Contacta a administración.",
+      );
     if (!email.trim() || password.length < 8 || (signup && !name.trim()))
       return setMessage(
         "Completa tus datos. La contraseña debe tener al menos 8 caracteres.",
@@ -54,9 +56,8 @@ export default function Login() {
         }}
       >
         <Card>
-          <Text style={s.label}>TU ESPACIO ATENZA</Text>
           <Text style={s.title}>
-            {signup ? "Crea tu cuenta." : "Bienvenido de nuevo."}
+            {signup ? "Crear cuenta" : "Iniciar sesión"}
           </Text>
           {signup && (
             <Field

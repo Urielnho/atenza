@@ -47,7 +47,7 @@ export default function Admin() {
   }
   return (
     <Shell>
-      <Text style={s.title}>Comunicación en tiempo real.</Text>
+      <Text style={s.title}>Administrar avisos</Text>
       {profile?.role !== "admin" ? (
         <Text style={s.muted}>
           Inicia sesión con una cuenta de administración para gestionar avisos.

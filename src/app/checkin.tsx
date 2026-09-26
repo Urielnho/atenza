@@ -5,6 +5,7 @@ import { Shell } from "../components/Shell";
 import { Button, Card, s } from "../components/ui";
 import { useData } from "../lib/store";
 import { supabase } from "../lib/supabase";
+import { formatRecordDate } from "../lib/time";
 export default function Checkin() {
   const { session, profile, attendance, refresh } = useData();
   const [busy, setBusy] = useState(false);
@@ -58,18 +59,16 @@ export default function Checkin() {
   }
   return (
     <Shell>
-      <Text style={s.label}>ATENZA MÓVIL</Text>
       <Text style={s.title}>
         {profile
           ? `Hola, ${profile.full_name.split(" ")[0]}.`
-          : "Tu asistencia, en un toque."}
+          : "Mi asistencia"}
       </Text>
       <View style={{ maxWidth: 650, gap: 24 }}>
         <Card>
-          <Text style={s.heading}>Confirma tu presencia</Text>
+          <Text style={s.heading}>Registrar asistencia</Text>
           <Text style={s.muted}>
-            Usa la huella o el rostro configurado en tu celular para autorizar
-            tu entrada o salida.
+            Confirma tu identidad para registrar tu entrada o salida.
           </Text>
           {!session ? (
             <Button
@@ -93,8 +92,7 @@ export default function Checkin() {
           )}
           {profile && profile.role !== "member" && (
             <Text style={s.muted}>
-              Esta cuenta administra o muestra el tablero. Usa una cuenta de
-              miembro para checar.
+              Usa una cuenta de usuario para registrar asistencia.
             </Text>
           )}
           {Platform.OS === "web" && (
@@ -109,14 +107,14 @@ export default function Checkin() {
           )}
         </Card>
         <Card>
-          <Text style={s.label}>MIS ÚLTIMOS REGISTROS</Text>
+          <Text style={s.heading}>Mis registros</Text>
+          <Text style={s.muted}>Hora de Hermosillo</Text>
           {attendance
             .filter((a) => a.user_id === session?.user.id)
             .slice(0, 10)
             .map((a) => (
               <Text key={a.id} style={s.muted}>
-                {a.kind.toUpperCase()} ·{" "}
-                {new Date(a.created_at).toLocaleString("es-MX")}
+                {a.kind.toUpperCase()} · {formatRecordDate(a.created_at)}
               </Text>
             ))}
           {!attendance.some((a) => a.user_id === session?.user.id) && (

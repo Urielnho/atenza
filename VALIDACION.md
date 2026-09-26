@@ -1,5 +1,12 @@
 # Validación de ATENZA
 
+## Ajustes del 25 de septiembre de 2026
+
+- Reloj, fecha del tablero y registros usan explícitamente `America/Hermosillo`, formato de 24 horas. Las fechas de asistencia siguen procediendo del servidor; el reloj en vivo usa el reloj del dispositivo, convertido a esa zona, y requiere que el dispositivo tenga su hora correcta.
+- `node scripts/test-time.mjs` comprueba cambio de fecha UTC, medianoche, invierno/verano y fechas con otros desfases horarios.
+- Se redujeron lemas, encabezados redundantes y textos de relleno. Se conservan estados de conexión, errores y avisos necesarios.
+- Solicitud nueva pendiente: exigir **huella y rostro reales** al registrar entrada. Expo LocalAuthentication no permite seleccionar ni acreditar por separado qué modalidad se usó. No se implementó una simulación ni una segunda llamada presentada falsamente como otro sensor. Falta confirmar el dispositivo y la integración biométrica adecuada.
+
 ## Estado de entrega — 22 de septiembre de 2026
 
 Las comprobaciones descritas abajo corresponden a la versión anterior con react-native-tvos. Después se cambió a React Native estándar 0.86.3 para iniciar compatibilidad con Expo Go; **no se volvió a ejecutar ni validar la aplicación tras ese cambio**, por petición del propietario de detener la ejecución y entregar el trabajo al equipo.
