@@ -103,10 +103,10 @@ Terminal 2, con el emulador encendido:
 cd C:\dev\atenza
 & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" reverse tcp:8787 tcp:8787
 & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" reverse tcp:8081 tcp:8081
-npx expo start --localhost
+npx expo start
 ```
 
-Abre ATENZA en el emulador y sigue los pasos 3 a 5 de la sección «Configuración del emulador» de [BIOMETRIA.md](BIOMETRIA.md). Repite `adb reverse` cada vez que reinicies el emulador.
+**No presiones `a`** en Metro: eso abre Expo Go, que no tiene el módulo de huella. Abre la app **ATENZA** desde su ícono en el emulador y sigue los pasos 3 a 5 de la sección «Configuración del emulador» de [BIOMETRIA.md](BIOMETRIA.md). Repite `adb reverse` cada vez que reinicies el emulador.
 
 ## 8. Actualizar a la última versión
 
@@ -125,5 +125,7 @@ Si cambió `package.json`, `app.config.js` o `modules/`, vuelve a compilar con e
 - **El emulador reinicia su sistema o no instala apps (`Can't find service: package`, `Broken pipe`).** Visto con la imagen `android-36.1`: la emulación gráfica se cae (`hasReadColorBufferDma`). Borrar datos o usar `-gpu swiftshader_indirect` no lo arregló; usa un emulador **API 35**.
 - **`Configura SUPABASE_SERVICE_ROLE_KEY solo en el servidor`.** Supabase CLI no está en el `Path` o no iniciaste sesión (`supabase login`).
 - **La app dice que no puede conectar con la verificación facial.** El servicio de la terminal 1 está apagado o falta `adb reverse tcp:8787 tcp:8787`.
+- **ATENZA en blanco o «Unable to load script».** Metro se inició con `--localhost` y en Windows solo escucha en IPv6 (`::1`); el emulador lo busca en `10.0.2.2` (IPv4). Reinicia Metro con `npx expo start` sin `--localhost` y vuelve a abrir ATENZA.
+- **«Something went wrong» en pantalla azul.** Se abrió en Expo Go (por presionar `a`). Cierra Expo Go y abre ATENZA desde su ícono.
 - **La cámara muestra una escena virtual.** El emulador no se arrancó con `-camera-front webcam0`.
 - **ATENZA no abre y el emulador pide PIN.** Desbloquea el emulador; Android no abre apps con el usuario bloqueado tras reiniciar.
