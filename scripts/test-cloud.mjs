@@ -68,19 +68,30 @@ try {
     (await display.rpc("atenza_check_in", { p_kind: "entrada" })).error,
   );
   assert.ok((await member.rpc("atenza_check_in", { p_kind: "otro" })).error);
-  const pair = await Promise.all([
-    member.rpc("atenza_check_in", { p_kind: "entrada" }),
-    member.rpc("atenza_check_in", { p_kind: "entrada" }),
-  ]);
+  assert.ok(
+    (await member.rpc("atenza_check_in", { p_kind: "entrada" })).error,
+    "El cliente no puede usar la ruta anterior",
+  );
+  assert.ok(
+    (
+      await member.rpc("atenza_verified_check_in", {
+        p_user: ids[0],
+        p_kind: "entrada",
+      })
+    ).error,
+    "Solo el servicio puede registrar verificaciones",
+  );
+  const verified = (kind) =>
+    admin.rpc("atenza_verified_check_in", { p_user: ids[0], p_kind: kind });
+  assert.ok((await verified("salida")).error, "Salida sin entrada rechazada");
+  assert.ok((await verified("otro")).error, "Tipo inválido rechazado");
+  const pair = await Promise.all([verified("entrada"), verified("entrada")]);
   assert.equal(
     pair.filter((r) => !r.error).length,
     1,
     "Una sola entrada concurrente",
   );
-  assert.ok(
-    (await member.rpc("atenza_check_in", { p_kind: "salida" })).error,
-    "Evita doble toque rápido",
-  );
+  assert.ok((await verified("salida")).error, "Evita doble toque rápido");
   const own = await member.from("atenza_attendance").select();
   assert.ifError(own.error);
   assert.equal(own.data.length, 1);
@@ -164,9 +175,7 @@ try {
         .eq("user_id", ids[0])
     ).error,
   );
-  assert.ifError(
-    (await member.rpc("atenza_check_in", { p_kind: "salida" })).error,
-  );
+  assert.ifError((await verified("salida")).error);
   assert.ifError(
     (await manager.from("atenza_notices").delete().eq("id", noticeId)).error,
   );

@@ -12,6 +12,10 @@ Tener una cuenta de usuario de ATENZA no da acceso al panel de Supabase. Las inv
 
 Lean [ENTREGA_EQUIPO.md](ENTREGA_EQUIPO.md) para comparar el avance con lo solicitado por el profesor, y [VALIDACION.md](VALIDACION.md) para conocer las pruebas realizadas y pendientes.
 
+## Huella y después rostro
+
+El checador Android ahora utiliza huella mediante un módulo nativo y comparación facial con cámara. Requiere la app Android propia y el servicio biométrico local encendido. **Expo Go y web no pueden completar este flujo.** Sigue [BIOMETRIA.md](BIOMETRIA.md) para instalar, registrar el rostro y probarlo.
+
 ## Iniciar
 
 ```powershell
@@ -26,7 +30,7 @@ La conexión local está en `.env` (ignorado por Git). Para otro equipo, copia `
 ## Flujo
 
 1. Crea cuentas desde «Iniciar sesión → Crear una cuenta» y confirma el correo.
-2. Las cuentas nuevas son miembros. En el celular, el miembro registra entrada/salida tras verificar su huella o rostro.
+2. Las cuentas nuevas son miembros. En el celular, el miembro registra entrada/salida tras verificar primero su huella y después su rostro.
 3. Crea una cuenta para administración y otra para pantalla; asigna sus roles mediante la terminal autenticada en Supabase:
 
 ```powershell
@@ -45,7 +49,7 @@ Para intentar abrir en Expo Go (con una versión compatible con SDK 57):
 npx expo start --go
 ```
 
-En el emulador Android Studio se puede usar `npx expo start --go --android`. `npm run android` todavía genera una app nativa; no abre Expo Go. La simulación de huella/rostro no está implementada. Face ID con expo-local-authentication requiere una compilación propia en iOS, no Expo Go.
+En el emulador Android Studio se puede usar `npx expo start --go --android`. `npm run android` todavía genera una app nativa; no abre Expo Go. El checador de dos pasos requiere la compilación propia Android descrita en BIOMETRIA.md. La vista web/Expo Go sirve para tablero y administración.
 
 Móvil:
 ```powershell
@@ -88,8 +92,8 @@ La prueba de nube requiere Supabase CLI autenticado. Crea cuentas temporales en 
 ## Alcance de esta primera versión
 
 - Implementa la alternativa de tablero de avisos e información en tiempo real del enunciado. La reproducción multimedia es opcional y no está incluida.
-- La biometría es una autorización local del sistema operativo; no se guardan huellas ni rostros. No identifica qué persona física tiene la huella registrada en un dispositivo compartido.
-- El servidor autentica la cuenta, pero todavía no verifica una prueba criptográfica del evento biométrico: un cliente modificado podría llamar la RPC directamente. Para producción, añadir firma con clave protegida por biometría y retos de un solo uso validados por servidor.
+- La huella se autoriza en Android y firma un desafío de un solo uso. El rostro se compara en el servicio local con una plantilla cifrada; no se almacena la foto recibida.
+- La RPC de registro anterior está revocada para clientes; la nueva solo permite al servicio guardar asistencias. No hay atestación de hardware ni detección de vida facial: no es una solución de seguridad de producción. Ver BIOMETRIA.md.
 - No comprueba ubicación ni presencia física. QR temporal/proximidad quedan fuera de esta primera versión.
 - La prueba real de huella/rostro requiere un celular físico. El navegador muestra la interfaz pero no simula una biometría exitosa.
 - Pendientes de validación: APK Android TV, navegación con control remoto y biometría en dispositivo real.

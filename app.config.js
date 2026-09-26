@@ -9,6 +9,14 @@ module.exports = ({ config }) => ({
   plugins: [
     "expo-router",
     "@react-native-tvos/config-tv",
+    [
+      "expo-camera",
+      {
+        cameraPermission: "ATENZA usa la cámara para verificar tu rostro.",
+        recordAudioAndroid: false,
+        barcodeScannerEnabled: false,
+      },
+    ],
     ...(process.env.EXPO_TV === "1"
       ? []
       : [

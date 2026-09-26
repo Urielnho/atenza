@@ -8,9 +8,11 @@
     "@react-native-tvos/config-tv": "^0.1.6",
     "@supabase/supabase-js": "^2.116.0",
     "expo": "~57.0.24",
+    "expo-camera": "~57.0.5",
     "expo-constants": "~57.0.19",
     "expo-linking": "~57.0.10",
     "expo-local-authentication": "~57.0.3",
+    "expo-modules-core": "~57.0.19",
     "expo-router": "~57.0.22",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
@@ -28,6 +30,7 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
+    "biometrics": "node scripts/start-biometric-server.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
     "start": "expo start",

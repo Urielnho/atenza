@@ -5,7 +5,9 @@
 - Reloj, fecha del tablero y registros usan explícitamente `America/Hermosillo`, formato de 24 horas. Las fechas de asistencia siguen procediendo del servidor; el reloj en vivo usa el reloj del dispositivo, convertido a esa zona, y requiere que el dispositivo tenga su hora correcta.
 - `node scripts/test-time.mjs` comprueba cambio de fecha UTC, medianoche, invierno/verano y fechas con otros desfases horarios.
 - Se redujeron lemas, encabezados redundantes y textos de relleno. Se conservan estados de conexión, errores y avisos necesarios.
-- Solicitud nueva pendiente: exigir **huella y rostro reales** al registrar entrada. Expo LocalAuthentication no permite seleccionar ni acreditar por separado qué modalidad se usó. No se implementó una simulación ni una segunda llamada presentada falsamente como otro sensor. Falta confirmar el dispositivo y la integración biométrica adecuada.
+- Implementado el flujo Android huella → cámara → comparación facial → registro del servicio en Supabase. Preparación y límites en BIOMETRIA.md; pendiente la prueba personal en emulador y sensor físico.
+- Servicio biométrico: seis pruebas automatizadas aprobadas (orden, consentimiento, firma, cifrado, caducidad, aislamiento, reutilización y límite de intentos). Estas pruebas utilizan un comparador facial de prueba.
+- Migración 20260926023818 aplicada: el cliente no tiene acceso al registro directo por RPC. Advisors no reportó advertencias sobre la nueva función; conserva avisos previos por funciones SECURITY DEFINER y protección de contraseñas filtradas desactivada.
 
 ## Estado de entrega — 22 de septiembre de 2026
 
@@ -38,4 +40,4 @@ La compilación nativa de Android TV terminó con error de Ninja/CMake: ruta de 
 7. Publicar/editar/eliminar un aviso desde administración y comprobarlo en la TV.
 8. Verificar foco y navegación mediante control remoto en Android TV.
 
-La biometría local no equivale a una prueba criptográfica verificada por el servidor ni a una comprobación de presencia física. Ver alcance en README.md.
+Las comprobaciones históricas anteriores no validan el nuevo flujo. El servicio actual verifica firmas, pero faltan atestación de hardware y detección de vida; ver BIOMETRIA.md.

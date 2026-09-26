@@ -43,3 +43,9 @@ yarn-error.*
 .env
 .secrets/
 supabase/.temp/
+biometric-server/.venv/
+biometric-server/data/
+biometric-server/models/
+__pycache__/
+.pytest_cache/
+modules/*/android/build/
