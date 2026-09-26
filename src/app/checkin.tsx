@@ -5,6 +5,7 @@ import { router, useIsFocused } from "expo-router";
 import { Shell } from "../components/Shell";
 import { Button, Card, s } from "../components/ui";
 import { useData } from "../lib/store";
+import { supabase } from "../lib/supabase";
 import { formatRecordDate } from "../lib/time";
 import {
   biometricRequest,
@@ -84,13 +85,29 @@ function CheckinSession() {
       active = false;
     };
   }, [userId, profile?.role, available]);
-  async function begin(next: Purpose) {
-    if (!session || lock.current || (next === "enroll" && !consent)) return;
+  async function nextKind(userId: string): Promise<"entrada" | "salida"> {
+    // Ask the database, not local state, so the choice is never stale.
+    if (!supabase) throw new Error("El servicio de cuentas no está disponible.");
+    const { data, error } = await supabase
+      .from("atenza_attendance")
+      .select("kind")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    if (error)
+      throw new Error("No se pudo consultar tu último registro. Revisa tu conexión.");
+    return data?.[0]?.kind === "entrada" ? "salida" : "entrada";
+  }
+  async function begin(request: "enroll" | "asistencia") {
+    if (!session || lock.current || (request === "enroll" && !consent)) return;
     lock.current = true;
     setBusy(true);
     setMessage("");
     const run = ++generation.current;
     try {
+      const next: Purpose =
+        request === "enroll" ? "enroll" : await nextKind(session.user.id);
+      if (run !== generation.current) return;
       if (!permission?.granted && !(await requestPermission()).granted)
         throw new Error("Permite usar la cámara para verificar tu rostro.");
       if (run !== generation.current) return;
@@ -242,21 +259,19 @@ function CheckinSession() {
               {step === "idle" && enrolled === true && (
                 <>
                   <Text style={s.muted}>
-                    Confirma tu huella y después mira a la cámara.
+                    Confirma tu huella y después mira a la cámara. Se
+                    registrará tu{" "}
+                    {attendance.find((a) => a.user_id === userId)?.kind ===
+                    "entrada"
+                      ? "salida"
+                      : "entrada"}
+                    .
                   </Text>
-                  <View style={s.row}>
-                    <Button
-                      title="Registrar entrada"
-                      disabled={busy}
-                      onPress={() => void begin("entrada")}
-                    />
-                    <Button
-                      secondary
-                      title="Registrar salida"
-                      disabled={busy}
-                      onPress={() => void begin("salida")}
-                    />
-                  </View>
+                  <Button
+                    title="Registrar asistencia"
+                    disabled={busy}
+                    onPress={() => void begin("asistencia")}
+                  />
                 </>
               )}
               {step === "fingerprint" && (
