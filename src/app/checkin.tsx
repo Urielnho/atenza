@@ -27,6 +27,7 @@ function CheckinSession() {
   const [purpose, setPurpose] = useState<Purpose>("entrada");
   const [consent, setConsent] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const camera = useRef<CameraView>(null);
   const challenge = useRef<string | null>(null);
@@ -116,6 +117,7 @@ function CheckinSession() {
       }
     }
   }
+  const captureRef = useRef<() => Promise<void>>(async () => {});
   async function capture() {
     if (lock.current || !challenge.current || !camera.current || !cameraReady)
       return;
@@ -159,6 +161,26 @@ function CheckinSession() {
       }
     }
   }
+  useEffect(() => {
+    captureRef.current = capture;
+  });
+  useEffect(() => {
+    // Take the photo automatically: a short countdown lets the person
+    // settle in front of the camera and the exposure adjust.
+    if (step !== "face" || !cameraReady || !focused) return;
+    let left = 3;
+    const tick = setInterval(() => {
+      left -= 1;
+      if (left > 0) return setCountdown(left);
+      clearInterval(tick);
+      setCountdown(null);
+      void captureRef.current();
+    }, 1000);
+    return () => {
+      clearInterval(tick);
+      setCountdown(null);
+    };
+  }, [step, cameraReady, focused]);
   return (
     <Shell>
       <Text style={s.title}>Mi asistencia</Text>
@@ -258,17 +280,13 @@ function CheckinSession() {
                       setMessage("No se pudo abrir la cámara.");
                     }}
                   />
-                  <Button
-                    title={
-                      busy
-                        ? "Verificando…"
-                        : purpose === "enroll"
-                          ? "Capturar y registrar rostro"
-                          : "Verificar rostro"
-                    }
-                    disabled={busy || !cameraReady}
-                    onPress={() => void capture()}
-                  />
+                  <Text accessibilityRole="alert" style={s.heading}>
+                    {busy
+                      ? "Verificando tu rostro…"
+                      : !cameraReady
+                        ? "Abriendo la cámara…"
+                        : `Capturando en ${countdown ?? 3}…`}
+                  </Text>
                 </>
               )}
               {step !== "idle" && (
