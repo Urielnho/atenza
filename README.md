@@ -16,6 +16,8 @@ Lean [ENTREGA_EQUIPO.md](ENTREGA_EQUIPO.md) para comparar el avance con lo solic
 
 El checador Android ahora utiliza huella mediante un módulo nativo y comparación facial con cámara. Requiere la app Android propia y el servicio biométrico local encendido. **Expo Go y web no pueden completar este flujo.** Sigue [BIOMETRIA.md](BIOMETRIA.md) para instalar, registrar el rostro y probarlo.
 
+Para preparar una laptop nueva con Windows paso a paso (ruta corta, Supabase CLI, emulador con webcam y problemas conocidos), consulta [INSTALACION.md](INSTALACION.md).
+
 ## Iniciar
 
 ```powershell
