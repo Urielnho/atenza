@@ -38,8 +38,8 @@ Si ya tienes la APK de desarrollo instalada, basta `npx expo start --localhost` 
 1. Usa un AVD Android con soporte de huella. En Ajustes de Android configura bloqueo de pantalla y una huella. En los controles extendidos del emulador, sección Fingerprint, se envían las lecturas durante el registro y la comprobación.
 2. Configura la cámara frontal del AVD para usar la webcam de la computadora y reinícialo si corresponde. La escena virtual no sirve para registrar tu rostro.
 3. Inicia sesión en ATENZA con una cuenta de **miembro**, no de administrador ni pantalla.
-4. Acepta registrar tu plantilla facial, pulsa «Registrar mi rostro», confirma la huella y captura tu rostro con buena luz.
-5. Pulsa «Registrar entrada»: confirma primero huella y después rostro. Comprueba la asistencia en tu historial y el tablero. Espera 30 segundos antes de registrar salida.
+4. Acepta registrar tu plantilla facial, pulsa «Registrar mi rostro» y confirma la huella. La cámara se abre y toma la foto sola tras una cuenta regresiva de 3 segundos: colócate de frente, con buena luz y **sin otras personas en el cuadro**.
+5. Pulsa «Registrar asistencia»: confirma primero huella y después rostro (captura automática). Se registra entrada o salida según tu último registro; la pantalla indica cuál. Comprueba la asistencia en tu historial y el tablero. Espera 30 segundos antes del siguiente registro.
 
 El emulador emite eventos de huella virtuales: no escanea físicamente tu dedo. La comparación facial sí procesa la imagen de la webcam. Para validar el sensor de huella real hace falta un teléfono Android con lector; no basta con que el AVD se llame Pixel.
 
@@ -48,7 +48,9 @@ El emulador emite eventos de huella virtuales: no escanea físicamente tu dedo. 
 - Cancelar la huella o usar una huella no registrada: no debe llegar al rostro ni guardar asistencia.
 - Cancelar la cámara, no mostrar rostro o mostrar uno diferente: no debe guardar asistencia.
 - Completar ambos pasos: una sola asistencia, con hora de Hermosillo.
-- Repetir entrada: rechazo de duplicado. Salida después de 30 segundos: registro correcto.
+- Sin registros o con el último en salida: se registra entrada. Con el último en entrada: se registra salida.
+- Registrar de nuevo antes de 30 segundos: rechazo del servidor. Después de 30 segundos: se registra la operación opuesta.
+- Dos personas en el cuadro: rechazo («Debe verse exactamente un rostro»).
 - Apagar el servicio o quitar internet: mensaje de error, sin éxito aparente.
 - Cambiar de pantalla durante la verificación: se cancela el intento.
 

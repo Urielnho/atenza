@@ -16,6 +16,15 @@ Lean [ENTREGA_EQUIPO.md](ENTREGA_EQUIPO.md) para comparar el avance con lo solic
 
 El checador Android ahora utiliza huella mediante un módulo nativo y comparación facial con cámara. Requiere la app Android propia y el servicio biométrico local encendido. **Expo Go y web no pueden completar este flujo.** Sigue [BIOMETRIA.md](BIOMETRIA.md) para instalar, registrar el rostro y probarlo.
 
+Cómo funciona en la app (pantalla «Mi asistencia»):
+
+1. **Registro facial (una sola vez):** aceptar el consentimiento → «Registrar mi rostro» → huella → captura automática del rostro. No marca asistencia.
+2. **Asistencia:** un solo botón, «Registrar asistencia». La app consulta el último registro del usuario en Supabase y registra la operación opuesta: **entrada** si no hay registros o el último fue salida; **salida** si el último fue entrada. La pantalla indica cuál se registrará.
+3. **Captura automática:** después de la huella se abre la cámara frontal y, cuando está lista, una cuenta regresiva de 3 segundos toma la foto sola; no hay botón de captura, solo «Cancelar».
+4. La asistencia se guarda solo si pasan huella **y** rostro. Debe verse **exactamente un rostro** (una segunda persona en el cuadro provoca rechazo). Cada foto consume la verificación de huella: si el rostro falla, se empieza de nuevo. El servidor sigue rechazando duplicados y registros con menos de 30 segundos de diferencia.
+
+El rostro que registra Android en Ajustes (Face Unlock) **no** se usa: Android no permite a una app pedir específicamente la cara ni saber qué sensor autorizó, así que no se marca «rostro verificado» con la biometría del sistema.
+
 Para preparar una laptop nueva con Windows paso a paso (ruta corta, Supabase CLI, emulador con webcam y problemas conocidos), consulta [INSTALACION.md](INSTALACION.md).
 
 ## Iniciar
@@ -69,7 +78,9 @@ npx expo run:android
 
 Al cambiar de TV a móvil, regenera los directorios nativos con EXPO_TV=0 y prebuild --clean. Solo se deben regenerar directorios generados, sin cambios nativos manuales. Android TV tiene foco visible en los botones. No se ha validado Apple TV ni televisores Tizen/webOS.
 
-La compilación nativa intentada falló por rutas de más de 260 caracteres en Windows. Para retomarla, clonen en una ruta corta (por ejemplo `C:\dev\atenza`) y regeneren los archivos nativos. No hay APK validada.
+La compilación nativa fallaba por rutas de más de 260 caracteres en Windows. Clonando en `C:\dev\atenza` la APK de desarrollo **compila** (25/09/2026, x86_64 + arm64-v8a, unos 10 minutos la primera vez) e instala en el emulador `Pixel 9 API 35`. Pasos completos en [INSTALACION.md](INSTALACION.md).
+
+Para usar la APK de desarrollo arranca Metro con `npx expo start` (**sin** `--localhost`: en Windows solo escucharía en IPv6 y la app mostraría «Unable to load script») y abre **ATENZA** desde su ícono. No presiones `a` en Metro: abre Expo Go, que no incluye el módulo de huella.
 
 ## Nube
 
@@ -90,6 +101,24 @@ node scripts/test-cloud.mjs
 ```
 
 La prueba de nube requiere Supabase CLI autenticado. Crea cuentas temporales en el proyecto especificado, prueba permisos/Realtime y elimina exclusivamente sus propios datos. Las claves administrativas se mantienen en memoria del script y nunca se envían a la app.
+
+## Estado de pruebas en emulador (25/09/2026)
+
+Windows 11, emulador `Pixel 9 API 35` con la webcam como cámara frontal (`-camera-front webcam0`) y huella virtual.
+
+Comprobado:
+
+- Pruebas del servicio (`pytest`, 6), `typecheck`, `lint` y prueba de hora de Hermosillo.
+- Compilación e instalación de la APK; la app carga desde Metro, inicia sesión con una cuenta de miembro y muestra su historial.
+- El servicio biométrico arranca con Supabase CLI (`npm run biometrics`), responde y rechaza peticiones sin sesión.
+- Paso 1: la huella virtual del emulador se acepta y la app pasa al paso del rostro; la cámara muestra la webcam.
+- Captura automática y entrada/salida automática: `typecheck` y `lint` pasan y Metro sirve la versión nueva.
+
+Pendiente de confirmar:
+
+- Registro facial completo: el primer intento se rechazó correctamente porque había dos personas en el cuadro.
+- Registrar asistencia con huella + rostro, que se guarde la operación correcta (entrada/salida) y que aparezca en la Pantalla en tiempo real con una cuenta de rol `display`.
+- Casos de error de [BIOMETRIA.md](BIOMETRIA.md): cancelar, rostro distinto, duplicado, servicio apagado.
 
 ## Alcance de esta primera versión
 
