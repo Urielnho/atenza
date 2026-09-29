@@ -48,12 +48,12 @@ node scripts/set-role.mjs correo-pantalla@dominio.com display
 
 Actualmente se usa **React Native estándar 0.86.3 con Expo SDK 57**. La dependencia `react-native-tvos` se sustituyó al iniciar la adaptación a Expo Go, pero esa adaptación quedó **sin validar**. El plugin de TV sigue en la configuración. La compilación JS Android no equivale a validar una APK.
 
-Para abrir en Expo Go en Android (con una versión compatible con SDK 57):
+Para abrir todo en Expo Go en Android (servicio, conexión ADB y aplicación):
 ```powershell
 npm run expo-go
 ```
 
-En el emulador Android Studio se puede usar `npm run expo-go -- --android`. Antes ejecuta `adb reverse tcp:8787 tcp:8787` para que Expo Go alcance el servicio local. `npm run android` genera la app nativa propia.
+El emulador Android Studio debe estar encendido. El comando configura `adb reverse`, inicia el servicio biométrico y abre Expo Go. Déjalo ejecutándose mientras pruebas. `npm run android` genera la app nativa propia.
 
 Móvil:
 ```powershell
