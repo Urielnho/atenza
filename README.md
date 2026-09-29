@@ -12,11 +12,13 @@ Tener una cuenta de usuario de ATENZA no da acceso al panel de Supabase. Las inv
 
 Lean [ENTREGA_EQUIPO.md](ENTREGA_EQUIPO.md) para comparar el avance con lo solicitado por el profesor, y [VALIDACION.md](VALIDACION.md) para conocer las pruebas realizadas y pendientes.
 
-## Huella y después rostro
+## Verificación con huella
 
-El checador Android ahora utiliza huella mediante un módulo nativo y comparación facial con cámara. Requiere la app Android propia y el servicio biométrico local encendido. **Expo Go y web no pueden completar este flujo.** Sigue [BIOMETRIA.md](BIOMETRIA.md) para instalar, registrar el rostro y probarlo.
+El checador Android utiliza el lector de huellas mediante un módulo nativo. Requiere la app Android propia y el servicio biométrico local encendido. **Expo Go y web no pueden completar este flujo.** Sigue [BIOMETRIA.md](BIOMETRIA.md) para instalarlo y probarlo.
 
-Para preparar una laptop nueva con Windows paso a paso (ruta corta, Supabase CLI, emulador con webcam y problemas conocidos), consulta [INSTALACION.md](INSTALACION.md).
+En «Mi asistencia», el usuario pulsa **Registrar asistencia** y confirma su huella. ATENZA consulta el último movimiento y registra automáticamente una **entrada** si no hay registros o el último fue salida, o una **salida** si el último fue entrada.
+
+La huella no sale de Android. Una clave privada protegida por Android Keystore firma un desafío único y el servidor valida la firma antes de registrar la asistencia en Supabase.
 
 ## Iniciar
 
@@ -32,7 +34,7 @@ La conexión local está en `.env` (ignorado por Git). Para otro equipo, copia `
 ## Flujo
 
 1. Crea cuentas desde «Iniciar sesión → Crear una cuenta» y confirma el correo.
-2. Las cuentas nuevas son miembros. En el celular, el miembro registra entrada/salida tras verificar primero su huella y después su rostro.
+2. Las cuentas nuevas son miembros. En el celular, el miembro registra entrada/salida después de verificar su huella.
 3. Crea una cuenta para administración y otra para pantalla; asigna sus roles mediante la terminal autenticada en Supabase:
 
 ```powershell
@@ -51,7 +53,7 @@ Para intentar abrir en Expo Go (con una versión compatible con SDK 57):
 npx expo start --go
 ```
 
-En el emulador Android Studio se puede usar `npx expo start --go --android`. `npm run android` todavía genera una app nativa; no abre Expo Go. El checador de dos pasos requiere la compilación propia Android descrita en BIOMETRIA.md. La vista web/Expo Go sirve para tablero y administración.
+En el emulador Android Studio se puede usar `npx expo start --go --android`. `npm run android` todavía genera una app nativa; no abre Expo Go. El checador con huella requiere la compilación propia Android descrita en BIOMETRIA.md. La vista web/Expo Go sirve para tablero y administración.
 
 Móvil:
 ```powershell
@@ -69,7 +71,9 @@ npx expo run:android
 
 Al cambiar de TV a móvil, regenera los directorios nativos con EXPO_TV=0 y prebuild --clean. Solo se deben regenerar directorios generados, sin cambios nativos manuales. Android TV tiene foco visible en los botones. No se ha validado Apple TV ni televisores Tizen/webOS.
 
-La compilación nativa intentada falló por rutas de más de 260 caracteres en Windows. Para retomarla, clonen en una ruta corta (por ejemplo `C:\dev\atenza`) y regeneren los archivos nativos. No hay APK validada.
+La compilación nativa fallaba por rutas de más de 260 caracteres en Windows. Clonando en `C:\dev\atenza` la APK de desarrollo **compila** (25/09/2026, x86_64 + arm64-v8a, unos 10 minutos la primera vez) e instala en el emulador `Pixel 9 API 35`. Pasos completos en [INSTALACION.md](INSTALACION.md).
+
+Para usar la APK de desarrollo arranca Metro con `npx expo start` (**sin** `--localhost`: en Windows solo escucharía en IPv6 y la app mostraría «Unable to load script») y abre **ATENZA** desde su ícono. No presiones `a` en Metro: abre Expo Go, que no incluye el módulo de huella.
 
 ## Nube
 
@@ -91,13 +95,17 @@ node scripts/test-cloud.mjs
 
 La prueba de nube requiere Supabase CLI autenticado. Crea cuentas temporales en el proyecto especificado, prueba permisos/Realtime y elimina exclusivamente sus propios datos. Las claves administrativas se mantienen en memoria del script y nunca se envían a la app.
 
+## Estado de pruebas en emulador
+
+La APK abre en el emulador Android y el módulo nativo acepta la huella virtual. TypeScript, ESLint y las seis pruebas del servicio pasan. Queda pendiente confirmar manualmente una entrada y salida completas y su actualización en el tablero en tiempo real.
+
 ## Alcance de esta primera versión
 
 - Implementa la alternativa de tablero de avisos e información en tiempo real del enunciado. La reproducción multimedia es opcional y no está incluida.
-- La huella se autoriza en Android y firma un desafío de un solo uso. El rostro se compara en el servicio local con una plantilla cifrada; no se almacena la foto recibida.
-- La RPC de registro anterior está revocada para clientes; la nueva solo permite al servicio guardar asistencias. No hay atestación de hardware ni detección de vida facial: no es una solución de seguridad de producción. Ver BIOMETRIA.md.
+- La huella se autoriza en Android y firma un desafío de un solo uso. El servicio valida la firma antes de registrar la asistencia.
+- La RPC de registro anterior está revocada para clientes; la nueva solo permite al servicio guardar asistencias. No hay atestación de hardware: no es una solución de seguridad de producción. Ver BIOMETRIA.md.
 - No comprueba ubicación ni presencia física. QR temporal/proximidad quedan fuera de esta primera versión.
-- La prueba real de huella/rostro requiere un celular físico. El navegador muestra la interfaz pero no simula una biometría exitosa.
+- La prueba real de huella requiere un celular físico. El navegador muestra la interfaz pero no simula una biometría exitosa.
 - Pendientes de validación: APK Android TV, navegación con control remoto y biometría en dispositivo real.
 
 Referencias: https://docs.expo.dev/guides/building-for-tv/ , https://docs.expo.dev/versions/v57.0.0/sdk/local-authentication/ , https://supabase.com/docs/guides/auth/quickstarts/react-native

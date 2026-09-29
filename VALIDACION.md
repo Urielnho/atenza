@@ -5,8 +5,8 @@
 - Reloj, fecha del tablero y registros usan explícitamente `America/Hermosillo`, formato de 24 horas. Las fechas de asistencia siguen procediendo del servidor; el reloj en vivo usa el reloj del dispositivo, convertido a esa zona, y requiere que el dispositivo tenga su hora correcta.
 - `node scripts/test-time.mjs` comprueba cambio de fecha UTC, medianoche, invierno/verano y fechas con otros desfases horarios.
 - Se redujeron lemas, encabezados redundantes y textos de relleno. Se conservan estados de conexión, errores y avisos necesarios.
-- Implementado el flujo Android huella → cámara → comparación facial → registro del servicio en Supabase. Preparación y límites en BIOMETRIA.md; pendiente la prueba personal en emulador y sensor físico.
-- Servicio biométrico: seis pruebas automatizadas aprobadas (orden, consentimiento, firma, cifrado, caducidad, aislamiento, reutilización y límite de intentos). Estas pruebas utilizan un comparador facial de prueba.
+- Implementado el flujo Android de huella → firma del desafío → registro del servicio en Supabase. Preparación y límites en BIOMETRIA.md; pendiente confirmar el flujo final en emulador y sensor físico.
+- Servicio biométrico: seis pruebas automatizadas aprobadas para firma, vínculo de dispositivo, caducidad, aislamiento, reutilización y límite de intentos.
 - Migración 20260926023818 aplicada: el cliente no tiene acceso al registro directo por RPC. Advisors no reportó advertencias sobre la nueva función; conserva avisos previos por funciones SECURITY DEFINER y protección de contraseñas filtradas desactivada.
 
 ## Estado de entrega — 22 de septiembre de 2026
@@ -31,7 +31,7 @@ La compilación nativa de Android TV terminó con error de Ninja/CMake: ruta de 
 
 ## Pruebas con dispositivos pendientes
 
-1. Abrir la app en un celular con huella/rostro registrado y usar la cuenta de miembro.
+1. Abrir la app en un celular con huella registrada y usar la cuenta de miembro.
 2. Cancelar el aviso biométrico: no debe crearse asistencia.
 3. Confirmar biometría: la entrada debe aparecer en la pantalla conectada.
 4. Intentar entrada duplicada: debe rechazarse sin crear otro registro.

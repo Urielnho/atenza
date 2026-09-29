@@ -1,8 +1,8 @@
 # Instalar ATENZA en otra laptop (Windows)
 
-Guía paso a paso para dejar funcionando ATENZA Android (huella y después rostro) en una computadora nueva. Complementa [BIOMETRIA.md](BIOMETRIA.md), que explica el flujo y los casos de prueba.
+Guía paso a paso para dejar funcionando ATENZA Android (huella) en una computadora nueva. Complementa [BIOMETRIA.md](BIOMETRIA.md), que explica el flujo y los casos de prueba.
 
-Probado el 25/09/2026 en Windows 11 con Node 22.13, Python 3.13, Android Studio (JDK incluido) y el emulador `Pixel 9 API 35`: dependencias, pruebas automáticas, compilación del APK, instalación en el emulador y arranque del servicio biométrico. **La prueba completa de huella + rostro en el emulador todavía está pendiente de validar.**
+Probado el 25/09/2026 en Windows 11 con Node 22.13, Python 3.13, Android Studio (JDK incluido) y el emulador `Pixel 9 API 35`: dependencias, pruebas automáticas, compilación del APK, instalación en el emulador y arranque del servicio biométrico. **La prueba completa de huella en el emulador todavía está pendiente de validar.**
 
 ## 1. Programas necesarios
 
@@ -52,7 +52,6 @@ Llena `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY` en `.env`. De
 npm ci
 py -3.13 -m venv biometric-server/.venv
 biometric-server/.venv/Scripts/python.exe -m pip install -r biometric-server/requirements.txt
-biometric-server/.venv/Scripts/python.exe biometric-server/download_models.py
 ```
 
 Comprobaciones:
@@ -77,16 +76,10 @@ npx expo run:android
 
 La primera compilación tarda alrededor de 10 minutos. Instala ATENZA en el emulador y abre Metro. No sirve Expo Go: la huella usa un módulo nativo propio (`modules/atenza-fingerprint`).
 
-## 6. Emulador con webcam y huella
+## 6. Huella en el emulador
 
-La cámara frontal del emulador debe ser tu webcam; si no, no puede reconocer tu rostro. Sin editar el AVD, arráncalo así:
+En Android configura un PIN y registra una huella (Ajustes → Seguridad → Huella). Los toques se envían desde los controles extendidos del emulador (**⋯ → Fingerprint → Touch sensor**).
 
-```powershell
-& "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -webcam-list        # nombre de la webcam, normalmente webcam0
-& "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd Pixel_9_API_35 -camera-front webcam0
-```
-
-En Android: configura un PIN y registra una huella (Ajustes → Seguridad → Huella). Los toques se envían desde los controles extendidos del emulador (**⋯ → Fingerprint → Touch sensor**).
 
 ## 7. Cada vez que vayas a probar
 
@@ -103,10 +96,10 @@ Terminal 2, con el emulador encendido:
 cd C:\dev\atenza
 & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" reverse tcp:8787 tcp:8787
 & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" reverse tcp:8081 tcp:8081
-npx expo start --localhost
+npx expo start
 ```
 
-Abre ATENZA en el emulador y sigue los pasos 3 a 5 de la sección «Configuración del emulador» de [BIOMETRIA.md](BIOMETRIA.md). Repite `adb reverse` cada vez que reinicies el emulador.
+**No presiones `a`** en Metro: eso abre Expo Go, que no tiene el módulo de huella. Abre la app **ATENZA** desde su ícono en el emulador y sigue los pasos 3 a 5 de la sección «Configuración del emulador» de [BIOMETRIA.md](BIOMETRIA.md). Repite `adb reverse` cada vez que reinicies el emulador.
 
 ## 8. Actualizar a la última versión
 
@@ -124,6 +117,7 @@ Si cambió `package.json`, `app.config.js` o `modules/`, vuelve a compilar con e
 - **`ERR_UNKNOWN_FILE_EXTENSION ".ts"` en `scripts/test-time.mjs`.** Node anterior a 22.18. Usa `node --experimental-strip-types scripts/test-time.mjs` o actualiza Node.
 - **El emulador reinicia su sistema o no instala apps (`Can't find service: package`, `Broken pipe`).** Visto con la imagen `android-36.1`: la emulación gráfica se cae (`hasReadColorBufferDma`). Borrar datos o usar `-gpu swiftshader_indirect` no lo arregló; usa un emulador **API 35**.
 - **`Configura SUPABASE_SERVICE_ROLE_KEY solo en el servidor`.** Supabase CLI no está en el `Path` o no iniciaste sesión (`supabase login`).
-- **La app dice que no puede conectar con la verificación facial.** El servicio de la terminal 1 está apagado o falta `adb reverse tcp:8787 tcp:8787`.
-- **La cámara muestra una escena virtual.** El emulador no se arrancó con `-camera-front webcam0`.
+- **La app dice que no puede conectar con la verificación biométrica.** El servicio de la terminal 1 está apagado o falta `adb reverse tcp:8787 tcp:8787`.
+- **ATENZA en blanco o «Unable to load script».** Metro se inició con `--localhost` y en Windows solo escucha en IPv6 (`::1`); el emulador lo busca en `10.0.2.2` (IPv4). Reinicia Metro con `npx expo start` sin `--localhost` y vuelve a abrir ATENZA.
+- **«Something went wrong» en pantalla azul.** Se abrió en Expo Go (por presionar `a`). Cierra Expo Go y abre ATENZA desde su ícono.
 - **ATENZA no abre y el emulador pide PIN.** Desbloquea el emulador; Android no abre apps con el usuario bloqueado tras reiniciar.

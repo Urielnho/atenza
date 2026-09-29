@@ -52,7 +52,7 @@ export async function biometricRequest<T>(
       (error instanceof Error && error.name === "AbortError")
     )
       throw new Error(
-        "No se pudo conectar con la verificación facial. Revisa tu conexión y el servicio.",
+        "No se pudo conectar con el servicio biométrico. Revisa tu conexión y el servicio.",
       );
     throw error;
   } finally {
@@ -61,7 +61,7 @@ export async function biometricRequest<T>(
 }
 export async function verifyFingerprint(
   userId: string,
-  purpose: "enroll" | "entrada" | "salida",
+  purpose: "entrada" | "salida",
 ) {
   if (!fingerprint)
     throw new Error(
