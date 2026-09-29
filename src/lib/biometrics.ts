@@ -14,7 +14,13 @@ const fingerprint =
     ? requireOptionalNativeModule<FingerprintModule>("AtenzaFingerprint")
     : null;
 export const hasFingerprintModule = !!fingerprint;
-const base = process.env.EXPO_PUBLIC_BIOMETRIC_URL || "http://127.0.0.1:8787";
+// Expo Go runs inside the Android emulator, where 127.0.0.1 points to the
+// emulator itself. 10.0.2.2 is Android Emulator's stable route to Windows.
+const base =
+  process.env.EXPO_PUBLIC_BIOMETRIC_URL ||
+  (Platform.OS === "android" && !fingerprint
+    ? "http://10.0.2.2:8787"
+    : "http://127.0.0.1:8787");
 export async function biometricRequest<T>(
   path: string,
   body?: object,
@@ -24,7 +30,7 @@ export async function biometricRequest<T>(
   if (!data.session) throw new Error("Inicia sesión nuevamente.");
   if (
     !base.startsWith("https://") &&
-    !/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(base)
+    !/^http:\/\/(127\.0\.0\.1|localhost|10\.0\.2\.2)(:\d+)?$/.test(base)
   )
     throw new Error("El servicio remoto de biometría debe usar HTTPS.");
   const controller = new AbortController();

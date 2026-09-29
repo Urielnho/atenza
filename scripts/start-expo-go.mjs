@@ -63,7 +63,7 @@ try {
     await waitForBackend();
   }
   const npx = isWindows ? "npx.cmd" : "npx";
-  expo = spawn(npx, ["expo", "start", "--go", "--android"], {
+  expo = spawn(npx, ["expo", "start", "--go", "--android", "--clear"], {
     cwd: root,
     stdio: "inherit",
   });

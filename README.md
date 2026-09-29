@@ -53,7 +53,7 @@ Para abrir todo en Expo Go en Android (servicio, conexión ADB y aplicación):
 npm run expo-go
 ```
 
-El emulador Android Studio debe estar encendido. El comando configura `adb reverse`, inicia el servicio biométrico y abre Expo Go. Déjalo ejecutándose mientras pruebas. `npm run android` genera la app nativa propia.
+El emulador Android Studio debe estar encendido. El comando inicia el servicio biométrico y abre Expo Go; Expo Go se conecta a Windows mediante `10.0.2.2`. Déjalo ejecutándose mientras pruebas. `npm run android` genera la app nativa propia.
 
 Móvil:
 ```powershell
