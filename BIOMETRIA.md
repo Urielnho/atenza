@@ -6,21 +6,13 @@ En Android puede probarse con Expo Go mediante `expo-local-authentication`. La A
 
 ## Preparación en Windows
 
-Requisitos: Node, Python 3.13, Android Studio/SDK, JDK de Android Studio, una cuenta de miembro de ATENZA y Supabase CLI autenticado. Trabaja en una ruta corta como `C:\dev\atenza` para evitar el límite de rutas de CMake.
-
-La primera vez, inicia sesión con una cuenta de Supabase que tenga acceso al proyecto ATENZA:
-
-```powershell
-npx supabase login
-```
+Para Expo Go se necesita Node, Android Studio/SDK y una cuenta de miembro de ATENZA. No se necesita Supabase CLI ni acceso al panel de Supabase.
 
 ```powershell
 npm ci
-py -3.13 -m venv biometric-server/.venv
-biometric-server/.venv/Scripts/python.exe -m pip install -r biometric-server/requirements.txt
 ```
 
-El comando de Expo Go inicia también el servicio en `127.0.0.1:8787`. El lanzador obtiene la clave `service_role` mediante Supabase CLI y la entrega únicamente al servidor. Nunca coloques esa clave en `.env` de Expo ni en variables `EXPO_PUBLIC_*`.
+La asistencia de Expo Go se registra en la nube mediante la función `atenza-checkin`. La aplicación solo contiene la clave pública de Supabase y la sesión del usuario; la clave administrativa permanece dentro de Supabase.
 
 En otra terminal, con el emulador encendido:
 

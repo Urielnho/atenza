@@ -14,7 +14,7 @@ Lean [ENTREGA_EQUIPO.md](ENTREGA_EQUIPO.md) para comparar el avance con lo solic
 
 ## Verificación con huella
 
-El checador Android utiliza el lector de huellas. En Expo Go usa `expo-local-authentication`; en la APK propia usa además el módulo nativo que firma un desafío con Android Keystore. Ambos flujos requieren el servicio biométrico local encendido. Sigue [BIOMETRIA.md](BIOMETRIA.md) para instalarlo y probarlo.
+El checador Android utiliza el lector de huellas. En Expo Go usa `expo-local-authentication` y registra mediante una Supabase Edge Function; en la APK propia usa además el módulo nativo que firma un desafío con Android Keystore. Sigue [BIOMETRIA.md](BIOMETRIA.md) para instalarlo y probarlo.
 
 En «Mi asistencia», el usuario pulsa **Registrar asistencia** y confirma su huella. ATENZA consulta el último movimiento y registra automáticamente una **entrada** si no hay registros o el último fue salida, o una **salida** si el último fue entrada.
 
@@ -48,12 +48,12 @@ node scripts/set-role.mjs correo-pantalla@dominio.com display
 
 Actualmente se usa **React Native estándar 0.86.3 con Expo SDK 57**. La dependencia `react-native-tvos` se sustituyó al iniciar la adaptación a Expo Go, pero esa adaptación quedó **sin validar**. El plugin de TV sigue en la configuración. La compilación JS Android no equivale a validar una APK.
 
-Para abrir todo en Expo Go en Android (servicio, conexión ADB y aplicación):
+Para abrir Expo Go en Android:
 ```powershell
 npm run expo-go
 ```
 
-El emulador Android Studio debe estar encendido. El comando inicia el servicio biométrico y abre Expo Go; Expo Go se conecta a Windows mediante `10.0.2.2`. Déjalo ejecutándose mientras pruebas. `npm run android` genera la app nativa propia.
+El emulador Android Studio debe estar encendido. El comando selecciona el emulador y abre Expo Go. No requiere Supabase CLI, servidor Python ni acceso de colaborador al proyecto. Déjalo ejecutándose mientras pruebas. `npm run android` genera la app nativa propia.
 
 Móvil:
 ```powershell

@@ -84,7 +84,12 @@ export async function verifyFingerprint(
     });
     if (!result.success)
       throw new Error(result.error === "user_cancel" ? "Verificación cancelada." : "No se pudo verificar la huella.");
-    await biometricRequest("/expo-go-fingerprint", { purpose });
+    if (!supabase) throw new Error("El servicio de cuentas no está disponible.");
+    const { data, error } = await supabase.functions.invoke("atenza-checkin", {
+      body: { purpose },
+    });
+    if (error || !data?.recorded)
+      throw new Error(data?.error || "No se pudo registrar la asistencia en la nube.");
     return;
   }
   const challenge = await biometricRequest<{ id: string; challenge: string }>(

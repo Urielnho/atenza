@@ -176,12 +176,17 @@ try {
     ).error,
   );
   assert.ifError((await verified("salida")).error);
+  const edgeCheckin = await other.functions.invoke("atenza-checkin", {
+    body: { purpose: "entrada" },
+  });
+  assert.ifError(edgeCheckin.error);
+  assert.equal(edgeCheckin.data?.recorded, true, "Edge Function registra asistencia");
   assert.ifError(
     (await manager.from("atenza_notices").delete().eq("id", noticeId)).error,
   );
   noticeId = undefined;
   console.log(
-    "PASS: roles, RLS, aislamiento, entrada/salida, concurrencia, duplicados, avisos y Realtime.",
+    "PASS: roles, RLS, Edge Function, entrada/salida, concurrencia, duplicados, avisos y Realtime.",
   );
 } finally {
   for (const client of clients) {
