@@ -14,9 +14,9 @@ Un checador de asistencia conectado a una pantalla inteligente. La persona confi
 | Información en tiempo real | Suscripciones Supabase Realtime implementadas y probadas desde scripts | Confirmar actualización entre dos dispositivos/sesiones. |
 | Tablero de avisos o multimedia | Crear, editar y eliminar avisos implementado | Probar las operaciones desde administración y observarlas en pantalla. No incluye reproducción multimedia. |
 | Gestión remota | Cuenta y pantalla de administración con permisos por rol | Probar gestión desde otro dispositivo. |
-| Autenticación por huella/rostro | Huella nativa seguida de comparación facial por cámara | Seguir BIOMETRIA.md. Requiere app Android propia y servicio local; sensor físico y detección de vida pendientes. |
+| Autenticación por huella/rostro | Huella nativa mediante el sensor de Android | Seguir BIOMETRIA.md. Requiere app Android propia y servicio local; la prueba en sensor físico está pendiente. |
 | Nube y checador | Tablas, autenticación, permisos y función de entradas/salidas implementados | Probar el flujo completo, errores de conexión y registros duplicados. |
-| Demostración en Expo Go | Vista de tablero y administración | El checador de dos pasos no funciona en Expo Go. |
+| Demostración en Expo Go | Vista de tablero y administración | El módulo nativo de huella no funciona en Expo Go. |
 
 **Conclusión de entrega:** hay una base funcional de interfaz y nube, pero no está completo ni comprobado el flujo integral exigido. Una simulación debe mostrarse como simulación y no presentarse como prueba de un sensor real.
 
@@ -38,7 +38,7 @@ No se comparten las credenciales personales de Uriel. Las cuentas de demostraci�
 
 ## Límites importantes
 
-- El servicio valida una firma por desafío y compara el rostro antes de llamar la RPC reservada al servidor. Falta atestación de hardware y detección de vida; revisar BIOMETRIA.md antes de considerar producción.
+- El servicio valida una firma por desafío antes de llamar la RPC reservada al servidor. Falta atestación de hardware; revisar BIOMETRIA.md antes de considerar producción.
 - No hay comprobación de ubicación física ni QR temporal.
 - Las cuentas de demostración usan correos sin buzón; no sirven para recuperación por correo.
 - `scripts/test-cloud.mjs` crea y elimina sus propios datos temporales en la nube: revisen el proyecto de destino y obtengan acceso antes de ejecutarlo.
