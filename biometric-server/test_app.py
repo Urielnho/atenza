@@ -102,6 +102,14 @@ def test_requires_login_and_rejects_invalid_purpose(setup):
     assert client.post("/fingerprint", content=b"x" * 20_001).status_code == 413
 
 
+def test_expo_go_compatibility_records_authenticated_user(setup):
+    client, _, cloud, _ = setup
+    result = post(client, "/expo-go-fingerprint", {"purpose": "entrada"})
+    assert result.status_code == 200
+    assert result.json()["recorded"] is True
+    assert cloud.records == [("alice", "entrada")]
+
+
 def test_challenge_replacement_and_rate_limit(setup):
     client, key, _, _ = setup
     old = challenge(client)

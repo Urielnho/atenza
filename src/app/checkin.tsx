@@ -6,7 +6,7 @@ import { Button, Card, s } from "../components/ui";
 import { useData } from "../lib/store";
 import { supabase } from "../lib/supabase";
 import { formatRecordDate } from "../lib/time";
-import { cancelFingerprint, hasFingerprintModule, verifyFingerprint } from "../lib/biometrics";
+import { cancelFingerprint, verifyFingerprint } from "../lib/biometrics";
 
 export default function Checkin() {
   const { session } = useData();
@@ -22,7 +22,7 @@ function CheckinSession() {
   const lock = useRef(false);
   const generation = useRef(0);
   const focused = useIsFocused();
-  const available = Platform.OS === "android" && !Platform.isTV && hasFingerprintModule;
+  const available = Platform.OS === "android" && !Platform.isTV;
 
   const cancel = useCallback(() => {
     generation.current++;

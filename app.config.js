@@ -9,5 +9,6 @@ module.exports = ({ config }) => ({
   plugins: [
     "expo-router",
     "@react-native-tvos/config-tv",
+    "expo-local-authentication",
   ],
 });

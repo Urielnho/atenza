@@ -14,7 +14,7 @@ Lean [ENTREGA_EQUIPO.md](ENTREGA_EQUIPO.md) para comparar el avance con lo solic
 
 ## Verificación con huella
 
-El checador Android utiliza el lector de huellas mediante un módulo nativo. Requiere la app Android propia y el servicio biométrico local encendido. **Expo Go y web no pueden completar este flujo.** Sigue [BIOMETRIA.md](BIOMETRIA.md) para instalarlo y probarlo.
+El checador Android utiliza el lector de huellas. En Expo Go usa `expo-local-authentication`; en la APK propia usa además el módulo nativo que firma un desafío con Android Keystore. Ambos flujos requieren el servicio biométrico local encendido. Sigue [BIOMETRIA.md](BIOMETRIA.md) para instalarlo y probarlo.
 
 En «Mi asistencia», el usuario pulsa **Registrar asistencia** y confirma su huella. ATENZA consulta el último movimiento y registra automáticamente una **entrada** si no hay registros o el último fue salida, o una **salida** si el último fue entrada.
 
@@ -48,12 +48,12 @@ node scripts/set-role.mjs correo-pantalla@dominio.com display
 
 Actualmente se usa **React Native estándar 0.86.3 con Expo SDK 57**. La dependencia `react-native-tvos` se sustituyó al iniciar la adaptación a Expo Go, pero esa adaptación quedó **sin validar**. El plugin de TV sigue en la configuración. La compilación JS Android no equivale a validar una APK.
 
-Para intentar abrir en Expo Go (con una versión compatible con SDK 57):
+Para abrir en Expo Go en Android (con una versión compatible con SDK 57):
 ```powershell
-npx expo start --go
+npm run expo-go
 ```
 
-En el emulador Android Studio se puede usar `npx expo start --go --android`. `npm run android` todavía genera una app nativa; no abre Expo Go. El checador con huella requiere la compilación propia Android descrita en BIOMETRIA.md. La vista web/Expo Go sirve para tablero y administración.
+En el emulador Android Studio se puede usar `npm run expo-go -- --android`. Antes ejecuta `adb reverse tcp:8787 tcp:8787` para que Expo Go alcance el servicio local. `npm run android` genera la app nativa propia.
 
 Móvil:
 ```powershell

@@ -1,4 +1,5 @@
 import { requireOptionalNativeModule } from "expo-modules-core";
+import * as LocalAuthentication from "expo-local-authentication";
 import { Platform } from "react-native";
 import { supabase } from "./supabase";
 type FingerprintModule = {
@@ -63,18 +64,32 @@ export async function verifyFingerprint(
   userId: string,
   purpose: "entrada" | "salida",
 ) {
-  if (!fingerprint)
-    throw new Error(
-      "Instala la versión Android de ATENZA para usar la huella.",
-    );
+  if (!fingerprint) {
+    const hardware = await LocalAuthentication.hasHardwareAsync();
+    const enrolled = await LocalAuthentication.isEnrolledAsync();
+    const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
+    if (!hardware || !enrolled || !types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT))
+      throw new Error("Configura una huella en los ajustes de Android.");
+    const result = await LocalAuthentication.authenticateAsync({
+      promptMessage: "Confirma tu huella",
+      cancelLabel: "Cancelar",
+      disableDeviceFallback: true,
+      biometricsSecurityLevel: "strong",
+    });
+    if (!result.success)
+      throw new Error(result.error === "user_cancel" ? "Verificación cancelada." : "No se pudo verificar la huella.");
+    await biometricRequest("/expo-go-fingerprint", { purpose });
+    return;
+  }
   const challenge = await biometricRequest<{ id: string; challenge: string }>(
     "/challenge",
     { purpose },
   );
   const proof = await fingerprint.authorize(userId, challenge.challenge);
   await biometricRequest("/fingerprint", { id: challenge.id, ...proof });
-  return challenge.id;
 }
 export const cancelFingerprint = () => {
   void fingerprint?.cancel();
+  if (!fingerprint && Platform.OS === "android")
+    void LocalAuthentication.cancelAuthenticate();
 };

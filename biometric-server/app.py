@@ -26,6 +26,10 @@ class FingerprintRequest(BaseModel):
     signature: str = Field(max_length=1024)
 
 
+class ExpoGoFingerprintRequest(BaseModel):
+    purpose: Literal["entrada", "salida"]
+
+
 class Cloud:
     def __init__(self):
         self.url = os.environ["SUPABASE_URL"].rstrip("/")
@@ -148,6 +152,14 @@ def create_app(db_path=None, cloud=None):
             if not device:
                 db.execute("insert into fingerprint_devices values (?,?,?)", (user_id, key_text, time.time()))
         attendance_id = remote.record(user_id, item["purpose"])
+        return {"recorded": True, "id": attendance_id}
+
+    @app.post("/expo-go-fingerprint")
+    def expo_go_fingerprint(body: ExpoGoFingerprintRequest, user_id=Depends(user)):
+        # Expo Go performs the Android biometric prompt locally. Unlike the
+        # custom build, it cannot sign a server challenge with our native
+        # Keystore module, so this compatibility route trusts that local result.
+        attendance_id = remote.record(user_id, body.purpose)
         return {"recorded": True, "id": attendance_id}
 
     return app

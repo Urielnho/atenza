@@ -2,7 +2,7 @@
 
 ATENZA Android solicita la huella mediante el sensor del sistema. Una clave privada protegida por Android Keystore firma un desafío de un solo uso; el servicio valida la firma y registra la asistencia en Supabase. La hora proviene del servidor y se muestra en `America/Hermosillo`.
 
-Este flujo necesita una **compilación propia de Android**. Expo Go y la versión web no incluyen el módulo nativo de huella.
+En Android puede probarse con Expo Go mediante `expo-local-authentication`. La APK propia agrega una firma verificable con Android Keystore; Expo Go solo informa a la aplicación que el aviso biométrico local terminó correctamente.
 
 ## Preparación en Windows
 
@@ -24,11 +24,10 @@ $env:JAVA_HOME='C:\Program Files\Android\Android Studio\jbr'
 $env:ANDROID_HOME="$env:LOCALAPPDATA\Android\Sdk"
 & "$env:ANDROID_HOME\platform-tools\adb.exe" reverse tcp:8787 tcp:8787
 & "$env:ANDROID_HOME\platform-tools\adb.exe" reverse tcp:8081 tcp:8081
-$env:EXPO_TV='0'
-npm run android
+npm run expo-go -- --android
 ```
 
-Si la APK ya está instalada, inicia Metro con `npx expo start` y abre ATENZA desde su icono. Repite `adb reverse` después de reiniciar el emulador.
+El último comando abre Expo Go. Repite `adb reverse` después de reiniciar el emulador. Para probar la APK propia usa `$env:EXPO_TV='0'; npm run android`.
 
 ## Prueba en el emulador
 
@@ -60,7 +59,7 @@ Para desvincular el dispositivo de un usuario, administración puede ejecutar:
 biometric-server/.venv/Scripts/python.exe biometric-server/reset_identity.py UUID_DEL_USUARIO --confirm
 ```
 
-Cualquier huella inscrita en ese dispositivo puede autorizar la clave. El primer vínculo confía en la sesión de la cuenta y no incluye atestación de hardware, por lo que esta versión es una demostración académica y no un sistema de control de acceso de producción.
+Cualquier huella inscrita en el dispositivo puede autorizar el registro. La APK propia vincula una clave al dispositivo, pero no incluye atestación de hardware. Expo Go no puede demostrarle al servidor que ocurrió la biometría: el servidor confía en el resultado enviado por el cliente. Esta ruta es adecuada para la demostración académica, no para un sistema de control de acceso de producción.
 
 ## Comprobaciones automatizadas
 
