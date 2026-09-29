@@ -8,6 +8,12 @@ En Android puede probarse con Expo Go mediante `expo-local-authentication`. La A
 
 Requisitos: Node, Python 3.13, Android Studio/SDK, JDK de Android Studio, una cuenta de miembro de ATENZA y Supabase CLI autenticado. Trabaja en una ruta corta como `C:\dev\atenza` para evitar el límite de rutas de CMake.
 
+La primera vez, inicia sesión con una cuenta de Supabase que tenga acceso al proyecto ATENZA:
+
+```powershell
+npx supabase login
+```
+
 ```powershell
 npm ci
 py -3.13 -m venv biometric-server/.venv

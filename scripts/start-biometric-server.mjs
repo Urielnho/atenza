@@ -5,18 +5,21 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("../", import.meta.url));
 let serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!serviceKey) {
-  const keys = JSON.parse(
-    execFileSync(
-      "powershell.exe",
-      [
-        "-NoProfile",
-        "-Command",
-        "supabase projects api-keys --project-ref kgxyfphjnaondupjakfj -o json",
-      ],
-      { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] },
-    ),
-  );
-  serviceKey = keys.find((k) => k.name === "service_role")?.api_key;
+  try {
+    const npx = process.platform === "win32" ? "npx.cmd" : "npx";
+    const keys = JSON.parse(
+      execFileSync(
+        npx,
+        ["--yes", "supabase", "projects", "api-keys", "--project-ref", "kgxyfphjnaondupjakfj", "-o", "json"],
+        { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] },
+      ),
+    );
+    serviceKey = keys.find((key) => key.name === "service_role")?.api_key;
+  } catch {
+    throw new Error(
+      "Supabase no está autenticado o tu cuenta no tiene acceso a ATENZA. Ejecuta: npx supabase login",
+    );
+  }
 }
 if (!serviceKey)
   throw new Error("Configura SUPABASE_SERVICE_ROLE_KEY solo en el servidor.");

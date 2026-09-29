@@ -7,6 +7,7 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const isWindows = process.platform === "win32";
 let backend = null;
 let expo = null;
+let androidSerial = "";
 
 function adbReverse() {
   const sdk = process.env.ANDROID_HOME ||
@@ -14,8 +15,17 @@ function adbReverse() {
   const adb = sdk ? resolve(sdk, "platform-tools", isWindows ? "adb.exe" : "adb") : "adb";
   if (sdk && !existsSync(adb)) return;
   try {
-    execFileSync(adb, ["reverse", "tcp:8787", "tcp:8787"], { stdio: "inherit" });
-    execFileSync(adb, ["reverse", "tcp:8081", "tcp:8081"], { stdio: "inherit" });
+    const devices = execFileSync(adb, ["devices"], { encoding: "utf8" })
+      .split(/\r?\n/)
+      .slice(1)
+      .map((line) => line.trim().split(/\s+/))
+      .filter((parts) => parts[0] && parts[1] === "device")
+      .map((parts) => parts[0]);
+    androidSerial = devices.find((serial) => serial.startsWith("emulator-")) || devices[0] || "";
+    if (!androidSerial) throw new Error("No Android device");
+    execFileSync(adb, ["-s", androidSerial, "reverse", "tcp:8787", "tcp:8787"], { stdio: "inherit" });
+    execFileSync(adb, ["-s", androidSerial, "reverse", "tcp:8081", "tcp:8081"], { stdio: "inherit" });
+    console.log(`Emulador seleccionado: ${androidSerial}`);
   } catch {
     console.warn("No se configuró ADB. Enciende el emulador Android y vuelve a ejecutar el comando.");
   }
@@ -66,6 +76,7 @@ try {
   expo = spawn(npx, ["expo", "start", "--go", "--android", "--clear"], {
     cwd: root,
     stdio: "inherit",
+    env: { ...process.env, ...(androidSerial ? { ANDROID_SERIAL: androidSerial } : {}) },
   });
   expo.on("exit", (code) => {
     backend?.kill("SIGINT");
